@@ -11,27 +11,91 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2f3d;
-      --text: #e8eaef;
-      --muted: #8b93a7;
-      --accent: #6c8cff;
-      --accent-hover: #8aa4ff;
-      --success: #4ade80;
+      --bg: #050000;
+      --surface: #120606;
+      --surface-2: #1a0808;
+      --border: #4a1010;
+      --text: #ece0e0;
+      --muted: #9a7070;
+      --accent: #cc1100;
+      --accent-bright: #ff2200;
+      --accent-hover: #ff3311;
+      --glow: rgba(255, 30, 0, 0.45);
+      --success: #ff6644;
       --mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+    }
+
+    @keyframes glitch-shift {
+      0%, 90%, 100% { transform: translate(0); opacity: 1; }
+      92% { transform: translate(-3px, 1px); opacity: 0.85; }
+      94% { transform: translate(3px, -1px); opacity: 0.9; }
+      96% { transform: translate(-2px, 0); opacity: 0.95; }
+    }
+
+    @keyframes glitch-clip {
+      0%, 88%, 100% { clip-path: inset(0 0 0 0); }
+      89% { clip-path: inset(42% 0 38% 0); }
+      91% { clip-path: inset(8% 0 72% 0); }
+      93% { clip-path: inset(65% 0 12% 0); }
+    }
+
+    @keyframes flicker {
+      0%, 97%, 100% { opacity: 1; }
+      98% { opacity: 0.88; }
+      99% { opacity: 0.96; }
+    }
+
+    @keyframes ember-pulse {
+      0%, 100% { box-shadow: 0 0 12px var(--glow), inset 0 0 20px rgba(255, 40, 0, 0.04); }
+      50% { box-shadow: 0 0 22px rgba(255, 50, 0, 0.55), inset 0 0 28px rgba(255, 40, 0, 0.08); }
+    }
+
+    @keyframes scanline-scroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
     }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: var(--bg);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(120, 0, 0, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(80, 0, 0, 0.25) 0%, transparent 50%),
+        var(--bg);
       color: var(--text);
       line-height: 1.5;
+      animation: flicker 8s infinite;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.18) 2px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      animation: scanline-scroll 0.12s linear infinite;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9997;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
     }
 
     .wrap {
+      position: relative;
+      z-index: 1;
       max-width: 560px;
       margin: 0 auto;
       padding: 2.5rem 1.25rem 3rem;
@@ -45,48 +109,95 @@
       display: flex;
       align-items: center;
       gap: 0.85rem;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.5rem;
     }
 
     .brand-logo {
       width: 52px;
       height: 52px;
-      border-radius: 10px;
+      border-radius: 4px;
       object-fit: cover;
       flex-shrink: 0;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 14px var(--glow);
     }
 
-    h1 {
+    .glitch {
+      position: relative;
       margin: 0;
       font-size: 1.75rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 8px var(--glow), 0 0 20px rgba(255, 0, 0, 0.3);
+      animation: glitch-shift 5s infinite steps(1);
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .glitch::before {
+      color: #ff0040;
+      animation: glitch-clip 4s infinite steps(1);
+      text-shadow: -2px 0 #ff0040;
+    }
+
+    .glitch::after {
+      color: #880000;
+      animation: glitch-clip 3s infinite steps(1) reverse;
+      text-shadow: 2px 0 #660000;
     }
 
     .subtitle {
       margin: 0;
       color: var(--muted);
       font-size: 0.95rem;
+      font-style: italic;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
     }
 
     section {
-      background: var(--surface);
+      background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 1.25rem 1.35rem 1.35rem;
       margin-bottom: 1.25rem;
+      box-shadow: 0 0 0 1px rgba(255, 30, 0, 0.06), 0 4px 24px rgba(0, 0, 0, 0.5);
+      animation: ember-pulse 6s ease-in-out infinite;
     }
 
     section h2 {
       margin: 0 0 0.35rem;
       font-size: 1.05rem;
       font-weight: 600;
+      color: var(--accent-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--mono);
     }
 
     .hint {
       margin: 0 0 1rem;
       color: var(--muted);
       font-size: 0.85rem;
+    }
+
+    .hint code {
+      color: #ff8866;
+      background: rgba(255, 30, 0, 0.08);
+      padding: 0.1em 0.35em;
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 0.9em;
     }
 
     .output-row {
@@ -99,51 +210,73 @@
       flex: 1;
       min-width: 0;
       padding: 0.65rem 0.85rem;
-      background: var(--bg);
+      background: #080000;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 2px;
       font-family: var(--mono);
       font-size: 0.9rem;
       word-break: break-all;
-      color: var(--text);
+      color: #ff9988;
+      text-shadow: 0 0 6px rgba(255, 80, 40, 0.25);
+      box-shadow: inset 0 0 12px rgba(255, 0, 0, 0.06);
     }
 
     .output.empty {
-      color: var(--muted);
+      color: #5a3030;
+      text-shadow: none;
+    }
+
+    .output.fresh {
+      animation: glitch-shift 0.35s steps(2);
+      color: #ffccaa;
     }
 
     button {
       cursor: pointer;
       border: none;
-      border-radius: 8px;
+      border-radius: 2px;
       font: inherit;
       font-size: 0.9rem;
-      transition: background 0.15s, transform 0.1s;
+      transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
     button:active { transform: scale(0.98); }
 
     .btn-primary {
       padding: 0.6rem 1.1rem;
-      background: var(--accent);
+      background: linear-gradient(180deg, var(--accent-hover) 0%, var(--accent) 100%);
       color: #fff;
       font-weight: 600;
+      border: 1px solid #ff4422;
+      box-shadow: 0 0 12px var(--glow);
     }
 
-    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #ff4422 0%, #dd1100 100%);
+      box-shadow: 0 0 20px rgba(255, 40, 0, 0.6);
+    }
 
     .btn-secondary {
       padding: 0.6rem 0.85rem;
-      background: var(--border);
+      background: #1a0808;
       color: var(--text);
       white-space: nowrap;
+      border: 1px solid var(--border);
     }
 
-    .btn-secondary:hover { background: #363c4d; }
+    .btn-secondary:hover {
+      background: #2a0e0e;
+      border-color: #6a1818;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    }
 
     .btn-secondary.copied {
-      background: #1a3d2a;
+      background: #1a1008;
       color: var(--success);
+      border-color: #663322;
+      box-shadow: 0 0 10px rgba(255, 100, 50, 0.3);
     }
 
     .actions {
@@ -161,22 +294,26 @@
       margin-bottom: 0.4rem;
       font-size: 0.85rem;
       color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.78rem;
     }
 
     input[type="number"] {
       width: 100%;
       padding: 0.55rem 0.75rem;
-      background: var(--bg);
+      background: #080000;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
+      border-radius: 2px;
+      color: #ff9988;
       font: inherit;
+      font-family: var(--mono);
       font-size: 1rem;
     }
 
     input[type="number"]:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
+      outline: 1px solid var(--accent-bright);
+      box-shadow: 0 0 10px var(--glow);
     }
 
     .checkboxes {
@@ -193,33 +330,46 @@
       cursor: pointer;
       font-size: 0.9rem;
       user-select: none;
+      font-family: var(--mono);
     }
 
     input[type="checkbox"] {
       width: 1rem;
       height: 1rem;
-      accent-color: var(--accent);
+      accent-color: var(--accent-bright);
     }
 
     .error {
       margin: 0 0 0.75rem;
-      color: #f87171;
+      color: #ff3333;
       font-size: 0.85rem;
       min-height: 1.25rem;
+      text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
     }
 
     footer {
       text-align: center;
       color: var(--muted);
       font-size: 0.8rem;
+      letter-spacing: 0.04em;
     }
 
     footer a {
-      color: var(--accent);
+      color: var(--accent-bright);
       text-decoration: none;
+      text-shadow: 0 0 6px var(--glow);
     }
 
-    footer a:hover { text-decoration: underline; }
+    footer a:hover {
+      text-decoration: underline;
+      color: #ff6644;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body, body::before, section, .glitch, .glitch::before, .glitch::after {
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -227,13 +377,13 @@
     <header>
       <div class="brand">
         <img class="brand-logo" src="favicon.png" width="52" height="52" alt="HLRN">
-        <h1>HLRN_pass_gen</h1>
+        <h1 class="glitch" data-text="HLRN_pass_gen">HLRN_pass_gen</h1>
       </div>
       <p class="subtitle">Адские врата будут закрыты навечно</p>
     </header>
 
     <section aria-labelledby="hex-title">
-      <h2 id="hex-title">SSH / hex</h2>
+      <h2 id="hex-title">⛧ SSH / hex</h2>
       <p class="hint">Аналог <code>openssl rand -hex 16</code> — 16 байт, 32 hex-символа, 128 бит энтропии.</p>
       <div class="output-row">
         <div id="hex-output" class="output empty" aria-live="polite">Нажмите «hex 16»</div>
@@ -245,7 +395,7 @@
     </section>
 
     <section aria-labelledby="pass-title">
-      <h2 id="pass-title">Обычный пароль</h2>
+      <h2 id="pass-title">⛧ Обычный пароль</h2>
       <p class="hint">Настраиваемая длина и набор символов. В пароле будет минимум по одному символу из каждой выбранной группы.</p>
 
       <div class="field">
@@ -362,6 +512,8 @@
       const value = generateHex16();
       hexOutput.textContent = value;
       hexOutput.classList.remove("empty");
+      hexOutput.classList.add("fresh");
+      setTimeout(() => hexOutput.classList.remove("fresh"), 400);
     });
 
     document.getElementById("pass-generate").addEventListener("click", () => {
@@ -380,6 +532,8 @@
         const value = generatePassword(length, useUpper, useDigits, useSpecial);
         passOutput.textContent = value;
         passOutput.classList.remove("empty");
+        passOutput.classList.add("fresh");
+        setTimeout(() => passOutput.classList.remove("fresh"), 400);
       } catch (err) {
         passError.textContent = err.message;
       }
